@@ -5,6 +5,8 @@ library(tidyverse)
 library(data.table)
 library(truncnorm)
 library(randomNames)
+library(maps)
+library(codename)
 
 create_coaches = function(ns = 400){
   #this function creates the database of coaches
@@ -79,3 +81,24 @@ create_player_db = function(ns = 1000){
   player_db = data.frame(rbind(pgs, sgs, sfs, pfs, cs))
   return(player_db)
 }
+
+create_schools = function(ns){
+  #this function is used to create schools for the game
+  #the input is the number of schools to create
+  #the output is a db of schools
+  
+  #create locations for schools and trim and rename columns
+  schools = subset(us.cities, name %in% sample(us.cities$name, ns))
+  schools = schools[,c(1:3)]
+  colnames(schools) = c('location', 'state', 'population')
+  
+  #sample animals list and add to schools df
+  schools$mascot = sample(data.frame(animals)$value, ns)
+  
+  #create prestige
+  schools$prestige = round(rtruncnorm(ns,mean=50,sd=15,a=1,b=100),0)
+  
+  #output from function
+  return(schools)
+}
+
